@@ -5,7 +5,7 @@
 
 Since the CGAL is highly templated, we need to specify Kernel type
 to manually expand type traits. However, the ability to change kernel
-type is remained.
+type is reserved.
 
 */
 
@@ -36,5 +36,10 @@ template <typename T> std::string to_string_op(const T & val)
 // Select types from kernel
 typedef K::Point_2 Point_2;
 typedef K::Vector_2 Vector_2;
+typedef K::Segment_2 Segment_2;
+
+#include <CGAL/Polygon_2.h>
+template <typename Container_P=std::vector<CGAL::Polygon_2<K>::Point_2>>
+using Polygon_2 = CGAL::Polygon_2<K, Container_P>;
 
 #endif // CGAL_CYTHON_CONFIG_H

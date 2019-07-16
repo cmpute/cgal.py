@@ -57,6 +57,10 @@ cdef class Point_2:
     property dimension:
         def __get__(self):
             return self.base.dimension()
+    def cartesian(self, int idx):
+        return self.base.cartesian(idx)
+    def homogeneous(self, int idx):
+        return self.base.homogeneous(idx)
 
     def __add__ (Point_2 x, Vector_2 y):
         return Point_2.wrap(x.base + y.base)
@@ -89,14 +93,13 @@ cdef class Point_2:
         return self.base >= other.base
     def __str__(self):
         return to_string_op(self.base).decode('ascii')
-    def __getitem__(self, index):
+    def __getitem__(self, int index):
         return self.base[index]
 
 cdef class Vector_2:
     def __cinit__(self, x=None, y=None, data=None):
         if x != None and y != None:
             self.base = C.Vector_2(<K_FT?>x, <K_FT?>y)
-
     @staticmethod
     cdef Vector_2 wrap(const C.Vector_2& data):
         cdef Vector_2 obj = Vector_2.__new__(Vector_2)
@@ -121,6 +124,13 @@ cdef class Vector_2:
     property dimension:
         def __get__(self):
             return self.base.dimension()
+    property squared_length:
+        def __get__(self):
+            return self.base.squared_length()
+    def cartesian(self, int idx):
+        return self.base.cartesian(idx)
+    def homogeneous(self, int idx):
+        return self.base.homogeneous(idx)
 
     def __add__ (Vector_2 x, Vector_2 y):
         return Vector_2.wrap(x.base + y.base)
@@ -160,5 +170,62 @@ cdef class Vector_2:
         return self.base != other.base
     def __str__(self):
         return to_string_op(self.base).decode('ascii')
-    def __getitem__(self, index):
+    def __getitem__(self, int index):
         return self.base[index]
+
+cdef class Segment_2:
+    def __cinit__(self, p=None, q=None):
+        if p != None and q != None:
+            self.base = C.Segment_2((<Point_2?>p).base, (<Point_2?>q).base)
+    @staticmethod
+    cdef Segment_2 wrap(const C.Segment_2& data):
+        cdef Segment_2 obj = Segment_2.__new__(Segment_2)
+        obj.base = data
+        return obj
+
+    property source:
+        def __get__(self):
+            return Point_2.wrap(self.base.source())
+    property target:
+        def __get__(self):
+            return Point_2.wrap(self.base.target())
+    property min:
+        def __get__(self):
+            return Point_2.wrap(self.base.min())
+    property max:
+        def __get__(self):
+            return Point_2.wrap(self.base.max())
+    property squared_length:
+        def __get__(self):
+            return self.base.squared_length()
+    property is_degenerate:
+        def __get__(self):
+            return self.base.is_degenerate()
+    property is_horizontal:
+        def __get__(self):
+            return self.base.is_horizontal()
+    property is_vertical:
+        def __get__(self):
+            return self.base.is_vertical()
+    def has_on(self, Point_2 p):
+        return self.base.has_on(p.base)
+    def collinear_has_on(self, Point_2 p):
+        return self.base.collinear_has_on(p.base)
+    def opposite(self):
+        return Segment_2.wrap(self.base.opposite())
+    def to_vector(self):
+        return Vector_2.wrap(self.base.to_vector())
+
+    def __eq__(self, Segment_2 other):
+        return self.base == other.base
+    def __ne__(self, Segment_2 other):
+        return self.base != other.base
+    def __str__(self):
+        return to_string_op(self.base).decode('ascii')
+    def __getitem__(self, int index):
+        return Point_2.wrap(self.base[index])
+
+cpdef intersection(obj1, obj2):
+    # TODO: implement this with C++ type definition using a separate file
+    # Ideally will be `object result = intersection_(PyObject obj1, PyObject obj2)`
+    pass
