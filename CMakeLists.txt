@@ -41,3 +41,7 @@ pybind11_add_module(_kernel_23 cgal/_kernel_23.cxx)
 target_link_libraries(_kernel_23 PUBLIC CGAL::CGAL CGAL::CGAL_Core)
 install(TARGETS _kernel_23 LIBRARY DESTINATION cgal)
 
+pybind11_add_module(_polygon cgal/_polygon.cxx)
+target_link_libraries(_polygon PUBLIC CGAL::CGAL CGAL::CGAL_Core)
+install(TARGETS _polygon LIBRARY DESTINATION cgal)
+
