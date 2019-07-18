@@ -37,10 +37,7 @@ set(CGAL_KERNEL "EPIC" CACHE STRING "Select Kernel for CGAL instantiation")
 add_definitions(-DUSE_CGAL_KERNEL_${CGAL_KERNEL})
 
 # ----------- Modules compilation ----------
-pybind11_add_module(_cgal
-    cgal/_cgal.cxx
-    cgal/_kernel_23.cxx
-)
-target_link_libraries(_cgal PUBLIC CGAL::CGAL CGAL::CGAL_Core)
-install(TARGETS _cgal LIBRARY DESTINATION cgal)
+pybind11_add_module(_kernel_23 cgal/_kernel_23.cxx)
+target_link_libraries(_kernel_23 PUBLIC CGAL::CGAL CGAL::CGAL_Core)
+install(TARGETS _kernel_23 LIBRARY DESTINATION cgal)
 

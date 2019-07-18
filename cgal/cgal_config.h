@@ -34,15 +34,18 @@ type is reserved.
 // Helper functions
 #include <string>
 #include <sstream>
-template <typename T> inline std::string to_string_cgal(const T & val)
+template <typename T> inline std::string cgal_repr(const T & val)
 {
     std::ostringstream ss;
     CGAL::set_pretty_mode(ss);
+    ss << '<' << val << '>';
+    return ss.str();
+}
+template <typename T> inline std::string cgal_str(const T & val)
+{
+    std::ostringstream ss;
     ss << val;
     return ss.str();
 }
-
-// Forward definitions
-void init_kernel_23(pybind11::module &m);
 
 #endif // CGAL_CYTHON_CONFIG_H
