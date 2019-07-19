@@ -1,8 +1,6 @@
 #include "_polygon.h"
 #include "_kernel_23.h"
 
-namespace py = pybind11;
-
 PYBIND11_MODULE(_polygon, m)
 {
     m.doc() = "Python wrapper of module Polygon";

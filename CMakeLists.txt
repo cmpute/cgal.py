@@ -45,3 +45,8 @@ pybind11_add_module(_polygon cgal/_polygon.cxx)
 target_link_libraries(_polygon PUBLIC CGAL::CGAL CGAL::CGAL_Core)
 install(TARGETS _polygon LIBRARY DESTINATION cgal)
 
+if (${CGAL_VERSION} VERSION_GREATER "4.12")
+    pybind11_add_module(_surface_sweep_2 cgal/_surface_sweep_2.cxx)
+    target_link_libraries(_surface_sweep_2 PUBLIC CGAL::CGAL CGAL::CGAL_Core)
+    install(TARGETS _surface_sweep_2 LIBRARY DESTINATION cgal)
+endif()
