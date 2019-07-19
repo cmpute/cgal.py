@@ -5,7 +5,7 @@ template <typename Curve>
 std::vector<Point_2> compute_intersection_points(std::vector<Curve> curves, bool report_endpoints)
 {
     std::vector<Point_2> points;
-    CGAL::compute_intersection_points(curves.begin(), curves.end(), std::back_inserter(pts));
+    CGAL::compute_intersection_points(curves.begin(), curves.end(), std::back_inserter(points));
     return points;
 }
 
@@ -32,5 +32,5 @@ PYBIND11_MODULE(_surface_sweep_2, m)
     m.def("compute_subcurves", &compute_subcurves<Segment_2>,
         py::arg("curves"), py::arg("mult_overlaps") = false);
     m.def("do_curves_intersect", &do_curves_intersect<Segment_2>,
-        py::arg("curves");
+        py::arg("curves"));
 }
