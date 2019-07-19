@@ -1,5 +1,4 @@
-from cgal._kernel_23 import Point_2 as Point
-from cgal._polygon import Polygon_2 as Polygon
+from cgal import Point_2 as Point, Polygon_2 as Polygon
 
 if __name__ == "__main__":
     points = [Point(0,0), Point(2,0), Point(2,3), Point(1,2)]

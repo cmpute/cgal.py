@@ -12,7 +12,9 @@ PYBIND11_MODULE(_polygon, m)
     typedef PySequenceIterator<Polygon_2::Edge_const_iterator> PyEdgeIterator;
     typedef PySequenceCirculator<Polygon_2::Vertex_circulator> PyVertexCirculator;
     typedef PySequenceCirculator<Polygon_2::Edge_const_circulator> PyEdgeCirculator;
+    typedef PySequenceIterator<Polygon_with_holes_2::Hole_iterator> PyHoleIterator;
 
+    // -------------- Polygon_2.h --------------
     py::class_<Polygon_2>(m, "Polygon_2")
         .def(py::init<>())
 	    .def("__init__", [](Polygon_2& base, std::vector<Point_2> vertices) {
@@ -113,7 +115,37 @@ PYBIND11_MODULE(_polygon, m)
         .def("__repr__", &cgal_repr<Polygon_2>)
         .def(py::self == Polygon_2())
         .def(py::self != Polygon_2())
+    ;
 
+    // -------------- Polygon_with_holes_2.h --------------
+    py::class_<Polygon_with_holes_2>(m, "Polygon_with_holes")
+        .def(py::init<>())
+        .def(py::init<Polygon_2>())
+	    .def("__init__", [](Polygon_with_holes_2& base, Polygon_2& pgn_boundary, std::vector<Polygon_2> holes) {
+            new (&base) Polygon_with_holes_2(pgn_boundary, holes.begin(), holes.end());
+        })
+        .def("outer_boundary", [](const Polygon_with_holes_2 & p) -> Polygon_2 {
+            return p.outer_boundary();
+        })
+        .def_property_readonly("holes", [](py::object self) { 
+            return PyHoleIterator(
+                self.cast<Polygon_with_holes_2 &>().holes_begin(), 
+                self.cast<Polygon_with_holes_2 &>().holes_end(), 
+                self
+            ); 
+        })
+        .def("add_hole", &Polygon_with_holes_2::add_hole)
+        .def("erase_hole", [](Polygon_with_holes_2& base, PyHoleIterator &iter) {
+            base.erase_hole(iter.iter);
+        })
+        .def("clear", &Polygon_with_holes_2::clear)
+        .def_property_readonly("has_holes", &Polygon_with_holes_2::has_holes)
+    	.def_property_readonly("is_unbounded", &Polygon_with_holes_2::is_unbounded)
+    	.def_property_readonly("is_plane", &Polygon_with_holes_2::is_plane)
+    	.def_property_readonly("number_of_holes", &Polygon_with_holes_2::number_of_holes)
+    	.def("bbox", &Polygon_with_holes_2::bbox)
+        .def("__str__", &cgal_str<Polygon_with_holes_2>)
+        .def("__repr__", &cgal_repr<Polygon_with_holes_2>)
     ;
 
     py::class_<PyVertexIterator>(m, "Vertex_iterator")
@@ -128,4 +160,7 @@ PYBIND11_MODULE(_polygon, m)
     py::class_<PyEdgeCirculator>(m, "Edge_const_circulator")
         .def("__iter__", [](PyEdgeCirculator &it) -> PyEdgeCirculator& { return it; })
         .def("__next__", &PyEdgeCirculator::next);
+    py::class_<PyHoleIterator>(m, "Hole_iterator")
+        .def("__iter__", [](PyHoleIterator &it) -> PyHoleIterator& { return it; })
+        .def("__next__", &PyHoleIterator::next);
 }

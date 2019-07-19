@@ -40,7 +40,7 @@ template <typename T> inline std::string cgal_repr(const T & val)
 {
     std::ostringstream ss;
     CGAL::set_pretty_mode(ss);
-    ss << '<' << val << '>';
+    ss << val;
     return ss.str();
 }
 template <typename T> inline std::string cgal_str(const T & val)
@@ -80,6 +80,14 @@ struct PySequenceCirculator
     T iter;
     py::object ref; // keep a reference
     size_t index = 0;
+};
+
+struct PyCast_visitor {
+    typedef py::object result_type;
+    template<typename T>
+    result_type operator()(const T &t) const {
+        return py::cast(t);
+    }
 };
 
 #endif // CGAL_CYTHON_CONFIG_H
