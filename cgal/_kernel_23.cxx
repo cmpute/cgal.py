@@ -1,5 +1,11 @@
 #include "_kernel_23.h"
 
+#if (CGAL_VERSION_MAJOR >= 4) && (CGAL_VERSION_MINOR >= 15)
+#define DEF_HASH(T) .def("__hash__", &CGAL::hash_value)
+#else
+#define DEF_HASH(T)
+#endif
+
 // Move intersection types to template params
 template<typename T1, typename T2>
 py::object intersection (T1 a, T2 b) {
@@ -76,6 +82,7 @@ PYBIND11_MODULE(_kernel_23, m)
         .def("__getitem__", &Point_2::operator[])
         .def("__str__", &cgal_str<Point_2>)
         .def("__repr__", &cgal_repr<Point_2>)
+        DEF_HASH(Point_2)
     ;
 
     // -------------- Vector_2.h --------------
@@ -118,6 +125,7 @@ PYBIND11_MODULE(_kernel_23, m)
         .def(-py::self)
         .def("__str__", &cgal_str<Vector_2>)
         .def("__repr__", &cgal_repr<Vector_2>)
+        DEF_HASH(Vector_2)
     ;
 
     // -------------- Bbox_2.h --------------
@@ -138,6 +146,7 @@ PYBIND11_MODULE(_kernel_23, m)
         .def(py::self != Bbox_2())
         .def("__str__", &cgal_str<Bbox_2>)
         .def("__repr__", &cgal_repr<Bbox_2>)
+        DEF_HASH(Bbox_2)
     ;
     
     // -------------- Direction_2.h --------------
@@ -162,6 +171,7 @@ PYBIND11_MODULE(_kernel_23, m)
         .def(py::self > Direction_2())
         .def("__str__", &cgal_str<Direction_2>)
         .def("__repr__", &cgal_repr<Direction_2>)
+        DEF_HASH(Direction_2)
     ;
 
     // -------------- Segment_2.h --------------
@@ -189,6 +199,7 @@ PYBIND11_MODULE(_kernel_23, m)
         .def(py::self != Segment_2())
         .def("__str__", &cgal_str<Segment_2>)
         .def("__repr__", &cgal_repr<Segment_2>)
+        DEF_HASH(Segment_2)
         .def("__getitem__", &Segment_2::operator[])
     ;
 
@@ -223,8 +234,9 @@ PYBIND11_MODULE(_kernel_23, m)
         .def("has_on_negative_side", &Line_2::has_on_negative_side)
         .def(py::self == Line_2())
         .def(py::self != Line_2())
-        .def("__str__", &cgal_str<Segment_2>)
-        .def("__repr__", &cgal_repr<Segment_2>)
+        .def("__str__", &cgal_str<Line_2>)
+        .def("__repr__", &cgal_repr<Line_2>)
+        DEF_HASH(Line_2)
     ;
 
     // -------------- Iso_rectangle_2.h --------------
@@ -258,8 +270,9 @@ PYBIND11_MODULE(_kernel_23, m)
         .def("has_on_unbounded_side", &Iso_rectangle_2::has_on_unbounded_side)
         .def(py::self == Iso_rectangle_2())
         .def(py::self != Iso_rectangle_2())
-        .def("__str__", &cgal_str<Segment_2>)
-        .def("__repr__", &cgal_repr<Segment_2>)
+        .def("__str__", &cgal_str<Iso_rectangle_2>)
+        .def("__repr__", &cgal_repr<Iso_rectangle_2>)
+        DEF_HASH(Iso_rectangle_2)
         .def("__getitem__", &Iso_rectangle_2::vertex)
     ;
 
@@ -282,8 +295,9 @@ PYBIND11_MODULE(_kernel_23, m)
         .def("has_on_positive_side", &Triangle_2::has_on_unbounded_side)
         .def(py::self == Triangle_2())
         .def(py::self != Triangle_2())
-        .def("__str__", &cgal_str<Segment_2>)
-        .def("__repr__", &cgal_repr<Segment_2>)
+        .def("__str__", &cgal_str<Triangle_2>)
+        .def("__repr__", &cgal_repr<Triangle_2>)
+        DEF_HASH(Triangle_2)
         .def("__getitem__", &Triangle_2::vertex)
     ;
 
@@ -338,4 +352,90 @@ PYBIND11_MODULE(_kernel_23, m)
     register_intersect<Segment_2, Segment_2>(m);
     register_intersect<Segment_2, Triangle_2>(m);
     register_intersect<Triangle_2, Triangle_2>(m);
+
+    // -------------- enum.h --------------
+    py::enum_<CGAL::Sign>(m, "Sign")
+        .value("NEGATIVE", CGAL::Sign::NEGATIVE)
+        .value("ZERO",     CGAL::Sign::ZERO)
+        .value("POSITIVE", CGAL::Sign::POSITIVE)
+    ;
+
+    py::enum_<CGAL::Bounded_side>(m, "Bounded_side")
+        .value("ON_BOUNDED_SIDE",   CGAL::Bounded_side::ON_BOUNDED_SIDE)
+        .value("ON_BOUNDARY",       CGAL::Bounded_side::ON_BOUNDARY)
+        .value("ON_UNBOUNDED_SIDE", CGAL::Bounded_side::ON_UNBOUNDED_SIDE)
+    ;
+
+    // py::enum_<CGAL::Comparison_result>(m, "Comparison_result")
+    //     .value("SMALLER",   CGAL::Comparison_result::SMALLER)
+    //     .value("EQUAL",     CGAL::Comparison_result::EQUAL)
+    //     .value("LARGER", 	CGAL::Comparison_result::LARGER)
+    // ;
+
+    py::enum_<CGAL::Angle>(m, "Angle")
+        .value("OBTUSE",    CGAL::Angle::OBTUSE)
+        .value("RIGHT",     CGAL::Angle::RIGHT)
+        .value("ACUTE", 	CGAL::Angle::ACUTE)
+    ;
+
+    // py::enum_<CGAL::Orientation>(m, "Orientation")
+    // 	.value("COLLINEAR", CGAL::COLLINEAR)
+    // 	.value("LEFT_TURN", CGAL::LEFT_TURN)
+    // 	.value("RIGHT_TURN", CGAL::RIGHT_TURN)
+    // 	.value("CLOCKWISE", CGAL::CLOCKWISE)
+    // 	.value("COUNTERCLOCKWISE", CGAL::COUNTERCLOCKWISE)
+    // ;
+
+    // py::enum_<CGAL::Oriented_side>(m, "Oriented_side")
+    // 	.value("ON_NEGATIVE_SIDE", CGAL::ON_NEGATIVE_SIDE)
+    // 	.value("ON_ORIENTED_BOUNDARY", CGAL::ON_ORIENTED_BOUNDARY)
+    // 	.value("ON_POSITIVE_SIDE", CGAL::ON_POSITIVE_SIDE)
+    // ;
+    
+    py::enum_<CGAL::Box_parameter_space_2>(m, "Box_parameter_space_2")
+    	.value("LEFT_BOUNDARY", CGAL::LEFT_BOUNDARY)
+    	.value("RIGHT_BOUNDARY", CGAL::RIGHT_BOUNDARY)
+    	.value("BOTTOM_BOUNDARY", CGAL::BOTTOM_BOUNDARY)
+    	.value("TOP_BOUNDARY", CGAL::TOP_BOUNDARY)
+    	.value("INTERIOR", CGAL::INTERIOR)
+    	.value("EXTERIOR", CGAL::EXTERIOR)
+    ;
+
+    // -------------- global_functions.h --------------
+
+    m.def("angle", static_cast<CGAL::Angle (*)(const K::Vector_2&, const K::Vector_2&)>(CGAL::angle));
+    m.def("angle", static_cast<CGAL::Angle (*)(const K::Point_2&, const K::Point_2&, const K::Point_2&)>(CGAL::angle));
+    m.def("angle", static_cast<CGAL::Angle (*)(const K::Point_2&, const K::Point_2&, const K::Point_2&, const K::Point_2&)>(CGAL::angle));
+
+    m.def("are_ordered_along_line", static_cast<bool (*)(const K::Point_2&, const K::Point_2&, const K::Point_2&)>(CGAL::are_ordered_along_line));
+    m.def("are_strictly_ordered_along_line", static_cast<bool (*)(const K::Point_2&, const K::Point_2&, const K::Point_2&)>(CGAL::are_strictly_ordered_along_line));
+    
+    m.def("area", static_cast<K::FT (*)(const K::Point_2&, const K::Point_2&, const K::Point_2&)>(CGAL::area));
+
+    m.def("barycenter", static_cast<K::Point_2 (*)(const K::Point_2&, const K::FT&, const K::Point_2&)>(CGAL::barycenter));
+    m.def("barycenter", static_cast<K::Point_2 (*)(const K::Point_2&, const K::FT&, const K::Point_2&, const K::FT&)>(CGAL::barycenter));
+    m.def("barycenter", static_cast<K::Point_2 (*)(const K::Point_2&, const K::FT&, const K::Point_2&, const K::FT&, const K::Point_2&)>(CGAL::barycenter));
+    m.def("barycenter", static_cast<K::Point_2 (*)(const K::Point_2&, const K::FT&, const K::Point_2&, const K::FT&, const K::Point_2&, const K::FT&)>(CGAL::barycenter));
+    m.def("barycenter", static_cast<K::Point_2 (*)(const K::Point_2&, const K::FT&, const K::Point_2&, const K::FT&, const K::Point_2&, const K::FT&, const K::Point_2&)>(CGAL::barycenter));
+    m.def("barycenter", static_cast<K::Point_2 (*)(const K::Point_2&, const K::FT&, const K::Point_2&, const K::FT&, const K::Point_2&, const K::FT&, const K::Point_2&, const K::FT&)>(CGAL::barycenter));
+
+    m.def("bisector", static_cast<K::Line_2 (*)(const K::Point_2&, const K::Point_2&)>(CGAL::bisector));
+    m.def("bisector", static_cast<K::Line_2 (*)(const K::Line_2&, const K::Line_2&)>(CGAL::bisector));
+
+    m.def("centroid", static_cast<K::Point_2 (*)(const K::Point_2&, const K::Point_2&, const K::Point_2&)>(CGAL::centroid));
+    m.def("centroid", static_cast<K::Point_2 (*)(const K::Point_2&, const K::Point_2&, const K::Point_2&, const K::Point_2&)>(CGAL::centroid));
+    m.def("centroid", static_cast<K::Point_2 (*)(const K::Triangle_2&)>(CGAL::centroid));
+    
+    m.def("circumcenter", static_cast<K::Point_2 (*)(const K::Point_2&, const K::Point_2&)>(CGAL::circumcenter));
+    m.def("circumcenter", static_cast<K::Point_2 (*)(const K::Point_2&, const K::Point_2&, const K::Point_2&)>(CGAL::circumcenter));
+    m.def("circumcenter", static_cast<K::Point_2 (*)(const K::Triangle_2&)>(CGAL::circumcenter));
+
+    m.def("collinear", static_cast<bool (*)(const K::Point_2&, const K::Point_2&, const K::Point_2&)>(CGAL::collinear));
+    m.def("collinear_are_ordered_along_line", static_cast<bool (*)(const K::Point_2&, const K::Point_2&, const K::Point_2&)>(CGAL::collinear_are_ordered_along_line));
+    m.def("collinear_are_strictly_ordered_along_line", static_cast<bool (*)(const K::Point_2&, const K::Point_2&, const K::Point_2&)>(CGAL::collinear_are_ordered_along_line));
+
+    m.def("squared_radius", static_cast<K::FT (*)(const K::Point_2&)>(CGAL::squared_radius));
+    m.def("squared_radius", static_cast<K::FT (*)(const K::Point_2&, const K::Point_2&)>(CGAL::squared_radius));
+    m.def("squared_radius", static_cast<K::FT (*)(const K::Point_2&, const K::Point_2&, const K::Point_2&)>(CGAL::squared_radius));
+
 }

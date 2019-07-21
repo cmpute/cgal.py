@@ -35,6 +35,8 @@ include_directories(BEFORE ${PYTHON_INCLUDE_DIR})
 # _: Custom kernels
 set(CGAL_KERNEL "EPIC" CACHE STRING "Select Kernel for CGAL instantiation")
 add_definitions(-DUSE_CGAL_KERNEL_${CGAL_KERNEL})
+add_definitions(-DCGAL_VERSION_MAJOR=${CGAL_VERSION_MAJOR})
+add_definitions(-DCGAL_VERSION_MINOR=${CGAL_VERSION_MINOR})
 
 # ----------- Modules compilation ----------
 pybind11_add_module(_kernel_23 cgal/_kernel_23.cxx)

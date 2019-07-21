@@ -4,7 +4,7 @@
 #include "cgal_config.h"
 #include <CGAL/kernel_basic.h>
 #include <CGAL/intersections.h>
-#include <CGAL/aff_transformation_tags.h>
+#include <CGAL/Kernel/global_functions.h>
 
 typedef K::Point_2 Point_2;
 typedef K::Vector_2 Vector_2;

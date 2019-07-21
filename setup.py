@@ -7,7 +7,7 @@ except ImportError:
 
 setup(
     name="cgal-py",
-    version="0.0.2",
+    version="0.0.3",
     description="Cython bindings of Computational Geometry Algorithms Library (CGAL)",
     long_description='(see project homepage)',
     author='Jacob Zhong',
