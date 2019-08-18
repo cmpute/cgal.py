@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.5.0)
 
 project(cgal_pybind11)
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED on)
 
 # ----------- Find required packages --------------
@@ -46,6 +46,10 @@ install(TARGETS _kernel_23 LIBRARY DESTINATION cgal)
 pybind11_add_module(_polygon cgal/_polygon.cxx)
 target_link_libraries(_polygon PUBLIC CGAL::CGAL CGAL::CGAL_Core)
 install(TARGETS _polygon LIBRARY DESTINATION cgal)
+
+pybind11_add_module(_arrangement_on_surface_2 cgal/_arrangement_on_surface_2.cxx)
+target_link_libraries(_arrangement_on_surface_2 PUBLIC CGAL::CGAL CGAL::CGAL_Core)
+install(TARGETS _arrangement_on_surface_2 LIBRARY DESTINATION cgal)
 
 if (${CGAL_VERSION} VERSION_GREATER "4.12")
     pybind11_add_module(_surface_sweep_2 cgal/_surface_sweep_2.cxx)
