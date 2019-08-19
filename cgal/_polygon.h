@@ -9,5 +9,6 @@ typedef CGAL::Polygon_2<K> Polygon_2;
 typedef CGAL::Polygon_with_holes_2<K> Polygon_with_holes_2;
 
 #include <pybind11/stl.h>
+#include <pybind11/numpy.h>
 
 #endif // CGAL_BIND_POLYGON

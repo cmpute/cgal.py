@@ -53,8 +53,8 @@ template <typename T> inline std::string cgal_str(const T & val)
 template <typename T>
 struct PySequenceIterator
 {
-    PySequenceIterator(const T & begin, const T & end, py::object ref)
-        : begin(begin), iter(begin), end(end), ref(ref) {}
+    PySequenceIterator(const T & iter, const T & end, py::object ref)
+        : iter(iter), end(end), ref(ref) {}
     py::object next()
     {
         if (iter == end)
@@ -62,16 +62,17 @@ struct PySequenceIterator
         return py::cast(*(iter++));
     }
 
-    T begin, iter, end;
+    T iter, end;
     py::object ref; // keep a reference
     size_t index = 0;
+    operator T() { return iter; }
 };
 
 template <typename T>
 struct PySequenceCirculator
 {
-    PySequenceCirculator(const T & begin, py::object ref)
-        : iter(begin), ref(ref) {}
+    PySequenceCirculator(const T & iter, py::object ref)
+        : iter(iter), ref(ref) {}
     py::object next()
     {
         return py::cast(*(iter++));
@@ -80,6 +81,7 @@ struct PySequenceCirculator
     T iter;
     py::object ref; // keep a reference
     size_t index = 0;
+    operator T() { return iter; }
 };
 
 struct PyCast_visitor {

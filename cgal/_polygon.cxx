@@ -18,18 +18,29 @@ PYBIND11_MODULE(_polygon, m)
 	    .def("__init__", [](Polygon_2& base, std::vector<Point_2> vertices) {
             new (&base) Polygon_2(vertices.begin(), vertices.end());
         })
-        .def_property_readonly("vertices", [](py::object self) {
+	    .def("__init__", [](Polygon_2& base, py::array_t<double> vertices) {
+            std::vector<Point_2> points;
+            auto r = vertices.unchecked<2>();
+
+            points.reserve(r.shape(0));
+            for (ssize_t n = 0; n < r.shape(0); n++)
+                points.push_back(Point_2(r(n, 0), r(n, 1)));
+
+            new (&base) Polygon_2(points.begin(), points.end());
+        })
+
+        .def_property_readonly("vertices_iterator", [](py::object self) {
             return PyVertexIterator(
                 self.cast<const Polygon_2 &>().vertices_begin(), 
                 self.cast<const Polygon_2 &>().vertices_end(), 
-                self); 
+                self);
         }, py::return_value_policy::copy, py::doc("Returns a constant iterator that allows to traverse the vertices of the polygon"))
         .def_property_readonly("vertices_circulator", [](py::object self) { 
             return PyVertexCirculator(
                 self.cast<const Polygon_2 &>().vertices_circulator(),
                 self);
         }, py::return_value_policy::copy, py::doc("Returns a mutable circulator that allows to traverse the vertices of the polygon."))
-        .def_property_readonly("edges", [](py::object self) { 
+        .def_property_readonly("edges_iterator", [](py::object self) { 
             return PyEdgeIterator(
                 self.cast<const Polygon_2 &>().edges_begin(), 
                 self.cast<const Polygon_2 &>().edges_end(), 
@@ -40,35 +51,69 @@ PYBIND11_MODULE(_polygon, m)
                 self.cast<const Polygon_2 &>().edges_circulator(),
                 self);
         }, py::return_value_policy::copy, py::doc("Returns a non-mutable circulator that allows to traverse the edges of the polygon."))
+        .def("__iter__", [](py::object &self) { return self.attr("vertices_iterator"); })
 
-        // std::vector-like operators
+        // std::vector-like operators, TODO: add a list delegate to access polygon as list
         .def("push_back", &Polygon_2::push_back)
-        .def("set", [](Polygon_2& base, PyVertexIterator &iter, Point_2 &p) {
-            base.set(iter.iter, p);
+        .def("set", [](Polygon_2& base, PyVertexIterator &iter, Point_2 &p) { base.set(iter.iter, p); })
+        .def("set", [](Polygon_2& base, int index, Point_2 &p) {
+            auto iter = base.vertices_begin();
+            while(index > 0) { iter++; index--; }
+            base.set(iter, p);
         })
-        .def("insert", [](Polygon_2& base, PyVertexIterator &iter, Point_2 &p) {
+        .def("insert", [](Polygon_2& base, PyVertexIterator &iter, const Point_2 &p) {
             base.insert(iter.iter, p);
+        })
+        .def("insert", [](Polygon_2& base, PyVertexCirculator &iter, const Point_2 &p) {
+            base.insert(iter.iter, p);
+        })
+        .def("insert", [](Polygon_2& base, int index, const Point_2 &p) {
+            auto iter = base.vertices_begin();
+            while(index > 0) { iter++; index--; }
+            base.insert(iter, p);
         })
         .def("insert", [](Polygon_2& base, PyVertexIterator &iter, std::vector<Point_2> vertices) {
             base.insert(iter.iter, vertices.begin(), vertices.end());
         })
+        .def("insert", [](Polygon_2& base, PyVertexCirculator &iter, std::vector<Point_2> vertices) {
+            base.insert(iter.iter, vertices.begin(), vertices.end());
+        })
+        .def("insert", [](Polygon_2& base, int index, std::vector<Point_2> vertices) {
+            auto iter = base.vertices_begin();
+            while(index > 0) { iter++; index--; }
+            base.insert(iter, vertices.begin(), vertices.end());
+        })
         .def("erase", [](Polygon_2& base, PyVertexIterator &iter) {
             base.erase(iter.iter);
+        })
+        .def("erase", [](Polygon_2& base, PyVertexCirculator &iter) {
+            base.erase(iter.iter);
+        })
+        .def("erase", [](Polygon_2& base, int index) {
+            auto iter = base.vertices_begin();
+            while(index > 0) { iter++; index--; }
+            base.erase(iter);
         })
         .def("erase", [](Polygon_2& base, PyVertexIterator &begin, PyVertexIterator &end) {
             base.erase(begin.iter, end.iter);
         })
+        .def("erase", [](Polygon_2& base, int begin_index, int end_index) {
+            auto begin_iter = base.vertices_begin();
+            while(begin_index > 0) { begin_iter++; begin_index--; }
+            auto end_iter = base.vertices_begin();
+            while(end_index > 0) { end_iter++; end_index--; }
+
+            base.erase(begin_iter, end_iter);
+        })
         .def("clear", &Polygon_2::clear)
         .def_property_readonly("is_empty", &Polygon_2::is_empty)
-
-        // list-like operators
-        .def("append", &Polygon_2::push_back)
-    	.def("__len__", &Polygon_2::size)
+    	.def("size", &Polygon_2::size)
 
         // indexers
         .def("vertex", &Polygon_2::vertex)
-        .def("__getitem__", &Polygon_2::operator[])
         .def("edge", &Polygon_2::edge)
+    	.def("__len__", &Polygon_2::size)
+        .def("__getitem__", &Polygon_2::operator[])
 
         // properties
         .def("reverse_orientation", &Polygon_2::reverse_orientation)

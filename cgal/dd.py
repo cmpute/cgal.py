@@ -9,3 +9,5 @@ from cgal._kernel_23 import Point_2 as Point,\
     Triangle_2 as Triangle,\
     Iso_rectangle_2 as Iso_rectangle,\
     ROTATION, TRANSLATION, SCALING, REFLECTION
+
+from cgal._polygon import Polygon_2 as Polygon
